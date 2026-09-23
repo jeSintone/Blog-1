@@ -16,6 +16,18 @@ pipeline {
                 sh 'docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity HIGH,CRITICAL blog:latest'
             }
         }
+        stage('Nikto') {
+            steps {
+                 sh '''
+                    docker run --rm --network container:blog sullo/nikto \
+                        -h http://localhost:3000 \
+                        -maxtime 5m \
+                        -nointeractive > nikto-report.txt || true
+                '''
+                sh 'cat nikto-report.txt'
+                archiveArtifacts artifacts: 'nikto-report.txt', allowEmptyArchive: true
+            }
+        }
         stage('Run') {
             steps {
                 sh 'docker stop blog || true'
