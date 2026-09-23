@@ -14,7 +14,8 @@ pipeline {
                     --format XML
                     --failOnCVSS 9
                     --data /var/jenkins_home/dependency-check-data
-                ''', odcInstallation: 'DP-Check', nvdCredentialsId: 'nvd-api-key'
+                    --nvdApiDelay 10000
+                ''', odcInstallation: 'DP-Check'
 
                 dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
