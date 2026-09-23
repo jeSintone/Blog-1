@@ -6,6 +6,19 @@ pipeline {
                 sh 'git pull origin main'
             }
         }
+        stage('OWASP Dependency-Check') {
+            steps {
+                dependencyCheck additionalArguments: '''
+                    --scan ./
+                    --format HTML
+                    --format XML
+                    --failOnCVSS 9
+                    --data /var/jenkins_home/dependency-check-data
+                ''', odcInstallation: 'DP-Check', nvdCredentialsId: 'nvd-api-key'
+
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            }
+        }
         stage('Build') {
             steps {
                 sh 'docker build --pull --rm -f "Dockerfile" -t blog:latest "."'
