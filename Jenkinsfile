@@ -6,15 +6,12 @@ pipeline {
                 sh 'git pull origin main'
             }
         }
-        stage('OWASP Dependency-Check Vulnerabilities') {
+       stage('OWASP Dependency-Check') {
             steps {
-                dependencyCheck additionalArguments: ''' 
-                    -o './'
-                    -s './'
-                    -f 'ALL' 
-                    --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
-                
-                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+                dependencyCheck additionalArguments: '--scan ./ --out ./ --format XML --format HTML --data /var/jenkins_home/dependency-check-data --nvdApiDelay 10000', odcInstallation: 'DP-Check'
+
+                sh 'ls -la'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
         stage('Build') {
